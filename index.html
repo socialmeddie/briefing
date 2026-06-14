@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="page-title">Briefing</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --purple-50: #EEEDFE; --purple-200: #AFA9EC; --purple-400: #7F77DD;
+      --purple-600: #534AB7; --purple-800: #3C3489; --purple-900: #26215C;
+      --green-50: #EAF3DE; --green-400: #639922; --green-600: #3B6D11; --green-800: #27500A;
+      --red-50: #FCEBEB; --red-400: #E24B4A; --red-600: #A32D2D;
+      --amber-50: #FAEEDA; --amber-600: #854F0B;
+      --gray-50: #F1EFE8; --gray-200: #B4B2A9; --gray-400: #888780;
+      --radius-md: 8px; --radius-lg: 12px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f8f7f5;
+      color: #1a1a1a;
+      min-height: 100vh;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    /* ---------- LAYOUT ---------- */
+    .container { max-width: 700px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+
+    /* ---------- ADMIN BAR ---------- */
+    #admin-bar {
+      background: var(--purple-900);
+      color: var(--purple-50);
+      padding: 10px 1.25rem;
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 13px; gap: 12px;
+    }
+    #admin-bar .ab-left { display: flex; align-items: center; gap: 8px; }
+    #admin-bar i { font-size: 16px; }
+    #admin-bar a { color: var(--purple-200); text-decoration: none; font-size: 13px;
+      border: 0.5px solid var(--purple-400); border-radius: var(--radius-md);
+      padding: 5px 12px; transition: background 0.15s; }
+    #admin-bar a:hover { background: rgba(255,255,255,0.1); }
+
+    /* ---------- HEADER ---------- */
+    .form-header { margin-bottom: 2rem; }
+    .form-header h1 { font-size: 22px; font-weight: 500; color: #1a1a1a; margin-bottom: 6px; }
+    .form-header p { font-size: 14px; color: #555; }
+
+    .progress-wrap { height: 3px; background: #e0ddd8; border-radius: 2px; margin-bottom: 2rem; overflow: hidden; }
+    .progress-fill { height: 100%; background: var(--purple-600); border-radius: 2px; transition: width 0.4s ease; width: 0%; }
+
+    /* ---------- QUESTION CARD ---------- */
+    .q-card {
+      background: #fff;
+      border: 0.5px solid #e0ddd8;
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+      margin-bottom: 0.875rem;
+      transition: border-color 0.2s;
+    }
+    .q-card.answered { border-color: var(--purple-200); }
+    .q-card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+    .q-num { font-size: 11px; font-weight: 500; color: #999; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; margin-top: 2px; }
+    .q-text { font-size: 15px; color: #1a1a1a; line-height: 1.5; flex: 1; }
+
+    .admin-q-controls { display: flex; gap: 4px; flex-shrink: 0; }
+    .icon-btn {
+      width: 30px; height: 30px; border-radius: var(--radius-md);
+      border: 0.5px solid #e0ddd8; background: transparent;
+      color: #888; cursor: pointer; display: flex; align-items: center; justify-content: center;
+      font-size: 15px; transition: all 0.15s;
+    }
+    .icon-btn:hover { background: #f1eee8; color: #1a1a1a; }
+    .icon-btn.danger:hover { background: var(--red-50); color: var(--red-600); border-color: #f0a0a0; }
+
+    /* ---------- ANSWER AREA ---------- */
+    .answer-area { position: relative; }
+    textarea.ans {
+      width: 100%; min-height: 80px; resize: vertical;
+      font-size: 14px; color: #1a1a1a;
+      background: #faf9f7; border: 0.5px solid #e0ddd8;
+      border-radius: var(--radius-md); padding: 10px 12px;
+      font-family: inherit; line-height: 1.6;
+      transition: border-color 0.2s;
+    }
+    textarea.ans:focus { outline: none; border-color: var(--purple-400); }
+    textarea.ans::placeholder { color: #bbb; }
+    textarea.ans:disabled { background: #f5f4f2; color: #888; border-color: #eee; cursor: default; }
+
+    .ans-footer { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+
+    .btn-record {
+      display: flex; align-items: center; gap: 6px;
+      padding: 6px 13px; border: 0.5px solid #d0cdc8;
+      border-radius: var(--radius-md); background: transparent;
+      color: #666; font-size: 13px; cursor: pointer;
+      transition: all 0.15s; font-family: inherit;
+    }
+    .btn-record:hover { background: #f1eee8; color: #1a1a1a; }
+    .btn-record.recording {
+      border-color: #D85A30; color: #D85A30; background: #FAECE7;
+    }
+    .rec-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+    .rec-dot.blink { animation: blink 1s step-end infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+    .transcribing { display: none; align-items: center; gap: 5px; font-size: 12px; color: #888; }
+    .transcribing.show { display: flex; }
+    .spinner { width: 11px; height: 11px; border: 1.5px solid #d0cdc8; border-top-color: var(--purple-600); border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .char-count { margin-left: auto; font-size: 12px; color: #bbb; }
+
+    /* ---------- ADD QUESTION (admin) ---------- */
+    .add-q-btn {
+      width: 100%; padding: 12px; border: 1px dashed #c8c5c0;
+      border-radius: var(--radius-lg); background: transparent;
+      color: #888; font-size: 14px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      transition: all 0.15s; font-family: inherit; margin-bottom: 1rem;
+    }
+    .add-q-btn:hover { background: #faf9f7; color: #444; border-color: var(--purple-400); }
+
+    /* ---------- EDIT MODAL ---------- */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.35);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 1000; padding: 1rem;
+    }
+    .modal-overlay.hidden { display: none; }
+    .modal {
+      background: #fff; border-radius: var(--radius-lg);
+      padding: 1.5rem; width: 100%; max-width: 500px;
+      border: 0.5px solid #e0ddd8;
+    }
+    .modal h3 { font-size: 16px; font-weight: 500; margin-bottom: 1rem; }
+    .modal label { font-size: 13px; color: #666; display: block; margin-bottom: 5px; }
+    .modal textarea, .modal input[type=text], .modal input[type=number], .modal input[type=url] {
+      width: 100%; font-size: 14px; color: #1a1a1a;
+      background: #faf9f7; border: 0.5px solid #d0cdc8;
+      border-radius: var(--radius-md); padding: 9px 12px;
+      font-family: inherit; transition: border-color 0.2s; margin-bottom: 12px;
+    }
+    .modal textarea { min-height: 90px; resize: vertical; line-height: 1.6; }
+    .modal textarea:focus, .modal input:focus { outline: none; border-color: var(--purple-400); }
+    .modal-footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 4px; }
+
+    /* ---------- BUTTONS ---------- */
+    .btn {
+      padding: 9px 18px; border-radius: var(--radius-md);
+      font-size: 14px; font-weight: 500; cursor: pointer;
+      border: 0.5px solid #d0cdc8; background: transparent;
+      color: #555; font-family: inherit; transition: all 0.15s;
+      display: inline-flex; align-items: center; gap: 7px;
+    }
+    .btn:hover { background: #f1eee8; color: #1a1a1a; }
+    .btn-primary {
+      background: var(--purple-600); color: #fff; border-color: var(--purple-600);
+    }
+    .btn-primary:hover { background: var(--purple-800); border-color: var(--purple-800); }
+    .btn-primary:disabled { opacity: 0.4; cursor: default; }
+    .btn-danger { color: var(--red-600); }
+    .btn-danger:hover { background: var(--red-50); border-color: #f0a0a0; }
+
+    /* ---------- SETTINGS PANEL (admin) ---------- */
+    .settings-section {
+      background: #fff; border: 0.5px solid #e0ddd8;
+      border-radius: var(--radius-lg); padding: 1.25rem; margin-top: 1.5rem;
+    }
+    .settings-section h3 { font-size: 15px; font-weight: 500; margin-bottom: 1rem; color: #1a1a1a; }
+    .field-group { margin-bottom: 14px; }
+    .field-group label { font-size: 13px; color: #666; display: block; margin-bottom: 5px; }
+    .field-group input, .field-group textarea {
+      width: 100%; font-size: 14px; color: #1a1a1a;
+      background: #faf9f7; border: 0.5px solid #d0cdc8;
+      border-radius: var(--radius-md); padding: 9px 12px;
+      font-family: inherit; transition: border-color 0.2s;
+    }
+    .field-group textarea { min-height: 70px; resize: vertical; line-height: 1.6; }
+    .field-group input:focus, .field-group textarea:focus { outline: none; border-color: var(--purple-400); }
+    .field-hint { font-size: 12px; color: #aaa; margin-top: 4px; }
+
+    .notice {
+      background: var(--amber-50); border: 0.5px solid #e8c97a;
+      border-radius: var(--radius-md); padding: 10px 14px;
+      font-size: 13px; color: var(--amber-600); line-height: 1.6; margin-top: 10px;
+    }
+    .notice a { color: var(--amber-600); }
+
+    /* ---------- ADMIN FOOTER ---------- */
+    .admin-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 10px; margin-top: 1.5rem; padding-top: 1.5rem;
+      border-top: 0.5px solid #e0ddd8;
+    }
+
+    /* ---------- CLIENT FOOTER ---------- */
+    .client-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 10px; margin-top: 1.5rem;
+    }
+    .answered-count { font-size: 13px; color: #888; }
+
+    /* ---------- SUCCESS ---------- */
+    #success-screen {
+      display: none; text-align: center; padding: 3rem 1rem;
+    }
+    #success-screen .check-circle {
+      width: 64px; height: 64px; border-radius: 50%;
+      background: var(--green-50); display: flex; align-items: center;
+      justify-content: center; margin: 0 auto 1.25rem; font-size: 28px; color: var(--green-600);
+    }
+    #success-screen h2 { font-size: 20px; font-weight: 500; margin-bottom: 8px; }
+    #success-screen p { font-size: 14px; color: #666; line-height: 1.7; max-width: 380px; margin: 0 auto; }
+
+    /* ---------- NOTION SETUP STEPS ---------- */
+    .steps { counter-reset: step; margin-top: 10px; }
+    .step { display: flex; gap: 10px; margin-bottom: 10px; font-size: 13px; color: #555; line-height: 1.5; }
+    .step::before {
+      counter-increment: step;
+      content: counter(step);
+      min-width: 22px; height: 22px; background: var(--purple-50);
+      color: var(--purple-600); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 500; flex-shrink: 0; margin-top: 1px;
+    }
+    .step a { color: var(--purple-600); }
+
+    /* ---------- SECTION DIVIDER ---------- */
+    .section-divider {
+      font-size: 11px; font-weight: 500; letter-spacing: 0.08em;
+      color: #aaa; text-transform: uppercase; margin: 1.5rem 0 0.75rem;
+    }
+
+    /* ---------- COPY LINK BOX ---------- */
+    .copy-link-box {
+      display: flex; gap: 8px; align-items: center; margin-top: 8px;
+    }
+    .copy-link-box input {
+      flex: 1; font-size: 12px; color: #666;
+      background: #faf9f7; border: 0.5px solid #d0cdc8;
+      border-radius: var(--radius-md); padding: 7px 10px;
+      font-family: monospace; pointer-events: none;
+    }
+
+    /* responsive */
+    @media (max-width: 480px) {
+      .admin-footer, .client-footer { flex-direction: column; align-items: stretch; }
+      .btn { justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ADMIN BAR (shown only in admin mode) -->
+<div id="admin-bar" style="display:none">
+  <div class="ab-left">
+    <i class="ti ti-settings"></i>
+    <span>Modo administrador</span>
+  </div>
+  <a href="?" target="_blank"><i class="ti ti-eye" style="font-size:13px;vertical-align:-1px"></i> Ver como cliente</a>
+</div>
+
+<div class="container">
+
+  <!-- FORM HEADER -->
+  <div class="form-header">
+    <h1 id="form-title">Briefing pré-reunião</h1>
+    <p id="form-desc">Antes do nosso encontro, me conta um pouco sobre o seu negócio. Você pode digitar ou gravar um áudio — eu transcrevo automaticamente.</p>
+  </div>
+
+  <div class="progress-wrap"><div class="progress-fill" id="progress-fill"></div></div>
+
+  <!-- QUESTIONS LIST -->
+  <div id="questions-list"></div>
+
+  <!-- ADD QUESTION BUTTON (admin only) -->
+  <button class="add-q-btn admin-only" id="add-q-btn" style="display:none">
+    <i class="ti ti-plus"></i> Adicionar pergunta
+  </button>
+
+  <!-- ADMIN SETTINGS -->
+  <div id="admin-settings" style="display:none">
+
+    <div class="section-divider">Configurações do formulário</div>
+    <div class="settings-section">
+      <h3>Cabeçalho</h3>
+      <div class="field-group">
+        <label>Título do formulário</label>
+        <input type="text" id="cfg-title" placeholder="Briefing pré-reunião" value="Briefing pré-reunião">
+      </div>
+      <div class="field-group">
+        <label>Descrição</label>
+        <textarea id="cfg-desc">Antes do nosso encontro, me conta um pouco sobre o seu negócio. Você pode digitar ou gravar um áudio — eu transcrevo automaticamente.</textarea>
+      </div>
+      <div class="field-group">
+        <label>Mensagem de sucesso (após envio)</label>
+        <textarea id="cfg-success">Briefing enviado! Obrigada pelas respostas. Já estou preparando as perguntas para a nossa conversa — logo entro em contato.</textarea>
+      </div>
+    </div>
+
+    <div class="section-divider">Integração com Notion</div>
+    <div class="settings-section">
+      <h3>Webhook de envio</h3>
+      <div class="field-group">
+        <label>URL do webhook (Make, n8n ou Zapier)</label>
+        <input type="url" id="cfg-webhook" placeholder="https://hook.eu2.make.com/xxxxxxxx">
+        <div class="field-hint">Quando o cliente enviar o formulário, as respostas serão enviadas para este endereço.</div>
+      </div>
+
+      <div class="notice">
+        <strong>Como conectar ao Notion gratuitamente:</strong>
+        <div class="steps">
+          <div class="step">Crie uma conta em <a href="https://make.com" target="_blank">make.com</a> (plano gratuito)</div>
+          <div class="step">Crie um novo cenário → escolha <strong>Webhooks → Custom webhook</strong> como trigger</div>
+          <div class="step">Copie a URL gerada e cole no campo acima</div>
+          <div class="step">Adicione um módulo <strong>Notion → Create a database item</strong> e conecte à sua base</div>
+          <div class="step">Mapeie os campos: <code>client_name</code>, <code>responses[n].question</code>, <code>responses[n].answer</code></div>
+          <div class="step">Ative o cenário e salve aqui</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-divider">Link para compartilhar</div>
+    <div class="settings-section">
+      <h3>Link do cliente</h3>
+      <p style="font-size:13px;color:#666;margin-bottom:10px">Envie este link para o cliente. Ele só vê o formulário, sem opções de edição.</p>
+      <div class="copy-link-box">
+        <input type="text" id="client-link-input" readonly>
+        <button class="btn" onclick="copyClientLink()" id="copy-btn">
+          <i class="ti ti-copy"></i> Copiar
+        </button>
+      </div>
+    </div>
+
+    <div class="admin-footer">
+      <span style="font-size:13px;color:#aaa">As perguntas são salvas automaticamente no navegador.</span>
+      <button class="btn btn-primary" onclick="saveConfig()">
+        <i class="ti ti-device-floppy"></i> Salvar configurações
+      </button>
+    </div>
+  </div>
+
+  <!-- CLIENT FOOTER -->
+  <div id="client-footer" style="display:none">
+    <div class="field-group" style="margin-bottom:12px">
+      <label style="font-size:13px;color:#666;">Seu nome (opcional)</label>
+      <input type="text" id="client-name" placeholder="Como posso te chamar?" style="max-width:280px;font-size:14px;color:#1a1a1a;background:#faf9f7;border:0.5px solid #d0cdc8;border-radius:var(--radius-md);padding:9px 12px;font-family:inherit;width:100%;">
+    </div>
+    <div class="client-footer">
+      <span class="answered-count" id="answered-count">0 perguntas respondidas</span>
+      <button class="btn btn-primary" id="btn-submit" onclick="submitForm()">
+        <i class="ti ti-send"></i> Enviar briefing
+      </button>
+    </div>
+  </div>
+
+  <!-- SUCCESS SCREEN -->
+  <div id="success-screen">
+    <div class="check-circle"><i class="ti ti-check"></i></div>
+    <h2>Briefing enviado!</h2>
+    <p id="success-msg">Obrigada pelas respostas. Já estou preparando as perguntas para a nossa conversa — logo entro em contato.</p>
+  </div>
+
+</div>
+
+<!-- EDIT QUESTION MODAL -->
+<div class="modal-overlay hidden" id="edit-modal">
+  <div class="modal">
+    <h3 id="modal-title">Editar pergunta</h3>
+    <label>Texto da pergunta</label>
+    <textarea id="modal-q-text" rows="3" placeholder="Digite a pergunta aqui..."></textarea>
+    <label>Limite de caracteres</label>
+    <input type="number" id="modal-q-max" value="500" min="100" max="2000">
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveQuestion()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE CONFIRM MODAL -->
+<div class="modal-overlay hidden" id="delete-modal">
+  <div class="modal">
+    <h3>Excluir pergunta</h3>
+    <p style="font-size:14px;color:#555;margin-bottom:1rem">Tem certeza que quer excluir esta pergunta? Esta ação não pode ser desfeita.</p>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeDeleteModal()">Cancelar</button>
+      <button class="btn btn-danger" onclick="confirmDelete()">Excluir</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const DEFAULT_QUESTIONS = [
+  { text: "Qual é o nome do seu negócio e o que você vende ou oferece?", max: 600 },
+  { text: "Para quem é o seu produto ou serviço? Descreva o seu cliente ideal.", max: 600 },
+  { text: "O que diferencia você da concorrência? Por que o cliente escolheria você?", max: 600 },
+  { text: "Em quais redes sociais você está presente? Quais usa com mais frequência?", max: 400 },
+  { text: "Que tipo de conteúdo você já publica ou já publicou? O que funcionou melhor?", max: 600 },
+  { text: "Você já fez anúncios pagos (tráfego pago)? Se sim, como foi a experiência?", max: 500 },
+  { text: "Qual é o principal objetivo que você quer alcançar com o marketing digital nos próximos 3 meses?", max: 500 },
+  { text: "Qual é a sua maior dificuldade hoje com as redes sociais ou o marketing?", max: 500 },
+  { text: "Você tem ideia do quanto pode investir por mês em marketing (produção + gestão + anúncios)?", max: 400 },
+  { text: "Tem algo mais que queira compartilhar antes da nossa reunião? Alguma dúvida, expectativa ou contexto importante?", max: 800 },
+];
+
+const STORAGE_KEY = 'briefing_config_v1';
+
+let isAdmin = false;
+let config = {};
+let editingIdx = null;
+let deletingIdx = null;
+const recognitions = {};
+const activeRec = {};
+
+function loadConfig() {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) {
+    try { config = JSON.parse(saved); } catch(e) { config = {}; }
+  }
+  config.title = config.title || 'Briefing pré-reunião';
+  config.desc = config.desc || 'Antes do nosso encontro, me conta um pouco sobre o seu negócio. Você pode digitar ou gravar um áudio — eu transcrevo automaticamente.';
+  config.successMsg = config.successMsg || 'Briefing enviado! Obrigada pelas respostas. Já estou preparando as perguntas para a nossa conversa — logo entro em contato.';
+  config.webhook = config.webhook || '';
+  config.questions = config.questions || JSON.parse(JSON.stringify(DEFAULT_QUESTIONS));
+}
+
+function saveConfig() {
+  config.title = document.getElementById('cfg-title').value.trim() || config.title;
+  config.desc = document.getElementById('cfg-desc').value.trim() || config.desc;
+  config.successMsg = document.getElementById('cfg-success').value.trim() || config.successMsg;
+  config.webhook = document.getElementById('cfg-webhook').value.trim();
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+  applyHeader();
+  showToast('Configurações salvas!');
+}
+
+function applyHeader() {
+  document.getElementById('form-title').textContent = config.title;
+  document.getElementById('form-desc').textContent = config.desc;
+  document.getElementById('page-title').textContent = config.title;
+  document.getElementById('success-msg').textContent = config.successMsg;
+  if (isAdmin) {
+    document.getElementById('cfg-title').value = config.title;
+    document.getElementById('cfg-desc').value = config.desc;
+    document.getElementById('cfg-success').value = config.successMsg;
+    document.getElementById('cfg-webhook').value = config.webhook;
+    const url = window.location.origin + window.location.pathname;
+    document.getElementById('client-link-input').value = url;
+  }
+}
+
+function renderQuestions() {
+  const list = document.getElementById('questions-list');
+  list.innerHTML = '';
+  config.questions.forEach((q, i) => {
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    card.dataset.idx = i;
+
+    const total = config.questions.length;
+    const num = String(i + 1).padStart(2, '0') + ' / ' + String(total).padStart(2, '0');
+
+    card.innerHTML = `
+      <div class="q-card-header">
+        <div>
+          <div class="q-num">${num}</div>
+          <div class="q-text">${escHtml(q.text)}</div>
+        </div>
+        ${isAdmin ? `
+        <div class="admin-q-controls">
+          <button class="icon-btn" title="Mover para cima" onclick="moveQ(${i},-1)" ${i===0?'disabled':''}>
+            <i class="ti ti-chevron-up"></i>
+          </button>
+          <button class="icon-btn" title="Mover para baixo" onclick="moveQ(${i},1)" ${i===total-1?'disabled':''}>
+            <i class="ti ti-chevron-down"></i>
+          </button>
+          <button class="icon-btn" title="Editar" onclick="openEditModal(${i})">
+            <i class="ti ti-edit"></i>
+          </button>
+          <button class="icon-btn danger" title="Excluir" onclick="openDeleteModal(${i})">
+            <i class="ti ti-trash"></i>
+          </button>
+        </div>` : ''}
+      </div>
+      <div class="answer-area">
+        <textarea class="ans" id="ans-${i}" maxlength="${q.max}" placeholder="Digite sua resposta aqui..." rows="3" data-idx="${i}"></textarea>
+        <div class="ans-footer">
+          <button class="btn-record" id="rec-${i}" data-idx="${i}">
+            <span class="rec-dot" id="dot-${i}"></span> Gravar áudio
+          </button>
+          <span class="transcribing" id="badge-${i}">
+            <span class="spinner"></span> Transcrevendo...
+          </span>
+          <span class="char-count" id="cc-${i}">0/${q.max}</span>
+        </div>
+      </div>
+    `;
+    list.appendChild(card);
+
+    const ta = document.getElementById('ans-' + i);
+    ta.addEventListener('input', () => {
+      document.getElementById('cc-' + i).textContent = ta.value.length + '/' + q.max;
+      updateProgress();
+      card.classList.toggle('answered', ta.value.trim().length > 0);
+    });
+
+    if (isAdmin) ta.disabled = true;
+    else setupRecording(i);
+  });
+
+  if (!isAdmin) updateProgress();
+}
+
+function setupRecording(i) {
+  const btn = document.getElementById('rec-' + i);
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) { btn.style.display = 'none'; return; }
+
+  btn.addEventListener('click', () => {
+    if (activeRec[i]) { recognitions[i].stop(); return; }
+
+    const rec = new SpeechRecognition();
+    rec.lang = 'pt-BR';
+    rec.continuous = true;
+    rec.interimResults = true;
+    recognitions[i] = rec;
+
+    const ta = document.getElementById('ans-' + i);
+    const badge = document.getElementById('badge-' + i);
+    const dot = document.getElementById('dot-' + i);
+    const baseText = ta.value;
+
+    rec.onstart = () => {
+      activeRec[i] = true;
+      btn.classList.add('recording');
+      dot.classList.add('blink');
+      btn.innerHTML = '<span class="rec-dot blink" id="dot-' + i + '"></span> Parar gravação';
+    };
+
+    rec.onresult = (e) => {
+      let final = baseText;
+      let interim = '';
+      for (let r = 0; r < e.results.length; r++) {
+        if (e.results[r].isFinal) final += (final ? ' ' : '') + e.results[r][0].transcript;
+        else interim += e.results[r][0].transcript;
+      }
+      ta.value = final + (interim ? ' ' + interim : '');
+      const max = config.questions[i].max;
+      document.getElementById('cc-' + i).textContent = ta.value.length + '/' + max;
+      updateProgress();
+      document.querySelector(`.q-card[data-idx="${i}"]`).classList.toggle('answered', ta.value.trim().length > 0);
+    };
+
+    rec.onend = () => {
+      activeRec[i] = false;
+      btn.classList.remove('recording');
+      btn.innerHTML = '<span class="rec-dot" id="dot-' + i + '"></span> Gravar áudio';
+      badge.classList.remove('show');
+      const max = config.questions[i].max;
+      if (ta.value.length > max) ta.value = ta.value.slice(0, max);
+      document.getElementById('cc-' + i).textContent = ta.value.length + '/' + max;
+      updateProgress();
+    };
+
+    rec.onerror = (e) => {
+      activeRec[i] = false;
+      btn.classList.remove('recording');
+      btn.innerHTML = '<span class="rec-dot" id="dot-' + i + '"></span> Gravar áudio';
+      badge.classList.remove('show');
+      if (e.error === 'not-allowed') alert('Permita o acesso ao microfone no navegador para usar a gravação.');
+    };
+
+    rec.start();
+  });
+}
+
+function updateProgress() {
+  const total = config.questions.length;
+  let filled = 0;
+  for (let i = 0; i < total; i++) {
+    const ta = document.getElementById('ans-' + i);
+    if (ta && ta.value.trim().length > 0) filled++;
+  }
+  document.getElementById('progress-fill').style.width = (filled / total * 100) + '%';
+  const el = document.getElementById('answered-count');
+  if (el) el.textContent = filled + ' de ' + total + ' perguntas respondidas';
+  const btn = document.getElementById('btn-submit');
+  if (btn) btn.disabled = filled === 0;
+}
+
+function openEditModal(idx) {
+  editingIdx = idx;
+  const q = idx === null ? { text: '', max: 500 } : config.questions[idx];
+  document.getElementById('modal-title').textContent = idx === null ? 'Nova pergunta' : 'Editar pergunta';
+  document.getElementById('modal-q-text').value = q.text;
+  document.getElementById('modal-q-max').value = q.max;
+  document.getElementById('edit-modal').classList.remove('hidden');
+}
+
+function closeModal() {
+  editingIdx = null;
+  document.getElementById('edit-modal').classList.add('hidden');
+}
+
+function saveQuestion() {
+  const text = document.getElementById('modal-q-text').value.trim();
+  const max = parseInt(document.getElementById('modal-q-max').value) || 500;
+  if (!text) return;
+  if (editingIdx === null) {
+    config.questions.push({ text, max });
+  } else {
+    config.questions[editingIdx] = { text, max };
+  }
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+  closeModal();
+  renderQuestions();
+}
+
+function openDeleteModal(idx) {
+  deletingIdx = idx;
+  document.getElementById('delete-modal').classList.remove('hidden');
+}
+
+function closeDeleteModal() {
+  deletingIdx = null;
+  document.getElementById('delete-modal').classList.add('hidden');
+}
+
+function confirmDelete() {
+  if (deletingIdx === null) return;
+  config.questions.splice(deletingIdx, 1);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+  closeDeleteModal();
+  renderQuestions();
+}
+
+function moveQ(idx, dir) {
+  const qs = config.questions;
+  const newIdx = idx + dir;
+  if (newIdx < 0 || newIdx >= qs.length) return;
+  [qs[idx], qs[newIdx]] = [qs[newIdx], qs[idx]];
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+  renderQuestions();
+}
+
+async function submitForm() {
+  const btn = document.getElementById('btn-submit');
+  const responses = config.questions.map((q, i) => ({
+    question: q.text,
+    answer: (document.getElementById('ans-' + i)?.value || '').trim()
+  }));
+
+  const clientName = document.getElementById('client-name')?.value?.trim() || 'Não informado';
+
+  const payload = {
+    timestamp: new Date().toISOString(),
+    client_name: clientName,
+    responses
+  };
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner" style="border-top-color:#fff;border-color:rgba(255,255,255,0.3);border-top-color:#fff"></span> Enviando...';
+
+  const webhook = config.webhook;
+
+  if (!webhook) {
+    showSuccessScreen();
+    return;
+  }
+
+  try {
+    await fetch(webhook, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+  } catch(e) {
+    console.warn('Webhook error:', e);
+  }
+
+  showSuccessScreen();
+}
+
+function showSuccessScreen() {
+  document.querySelector('.form-header').style.display = 'none';
+  document.querySelector('.progress-wrap').style.display = 'none';
+  document.getElementById('questions-list').style.display = 'none';
+  document.getElementById('client-footer').style.display = 'none';
+  document.getElementById('success-screen').style.display = 'block';
+}
+
+function copyClientLink() {
+  const input = document.getElementById('client-link-input');
+  navigator.clipboard.writeText(input.value).then(() => {
+    const btn = document.getElementById('copy-btn');
+    btn.innerHTML = '<i class="ti ti-check"></i> Copiado!';
+    setTimeout(() => { btn.innerHTML = '<i class="ti ti-copy"></i> Copiar'; }, 2000);
+  });
+}
+
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.textContent = msg;
+  t.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#1a1a1a;color:#fff;padding:10px 18px;border-radius:8px;font-size:13px;z-index:9999;opacity:0;transition:opacity 0.2s';
+  document.body.appendChild(t);
+  requestAnimationFrame(() => { t.style.opacity = '1'; });
+  setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 200); }, 2500);
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function init() {
+  const params = new URLSearchParams(window.location.search);
+  isAdmin = params.has('admin');
+
+  loadConfig();
+
+  if (isAdmin) {
+    document.getElementById('admin-bar').style.display = 'flex';
+    document.getElementById('add-q-btn').style.display = 'flex';
+    document.getElementById('admin-settings').style.display = 'block';
+    document.getElementById('client-footer').style.display = 'none';
+    document.getElementById('add-q-btn').addEventListener('click', () => openEditModal(null));
+  } else {
+    document.getElementById('client-footer').style.display = 'block';
+    document.getElementById('btn-submit').disabled = true;
+  }
+
+  applyHeader();
+  renderQuestions();
+}
+
+init();
+</script>
+</body>
+</html>
