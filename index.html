@@ -7,7 +7,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -733,74 +732,6 @@ function updateProgress() {
 /* ═══════════════════════════════════════════════════════
    SUBMIT
 ═══════════════════════════════════════════════════════ */
-function generatePDF(clientName, timestamp, responses) {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({ unit: 'mm', format: 'a4' });
-
-  const pageW  = 210;
-  const margin = 20;
-  const maxW   = pageW - margin * 2;
-  let   y      = 20;
-
-  const addLine = (text, opts = {}) => {
-    const { size = 11, bold = false, color = [30,28,24], lineH = 6, indent = 0 } = opts;
-    doc.setFontSize(size);
-    doc.setFont('helvetica', bold ? 'bold' : 'normal');
-    doc.setTextColor(...color);
-    const lines = doc.splitTextToSize(text, maxW - indent);
-    lines.forEach(line => {
-      if (y > 270) { doc.addPage(); y = 20; }
-      doc.text(line, margin + indent, y);
-      y += lineH;
-    });
-  };
-
-  // Header
-  doc.setFillColor(28, 26, 24);
-  doc.rect(0, 0, 210, 28, 'F');
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(16);
-  doc.setTextColor(237, 232, 224);
-  doc.text('SocialMeddie', margin, 12);
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(8);
-  doc.setTextColor(158, 152, 144);
-  doc.text('ESTRATÉGIA  ·  CONTEÚDO  ·  POSICIONAMENTO', margin, 20);
-  y = 40;
-
-  // Title
-  addLine('Briefing pré-reunião', { size: 18, bold: true, lineH: 9 });
-  y += 2;
-
-  // Meta
-  const dateStr = new Date(timestamp).toLocaleDateString('pt-BR', { day:'2-digit', month:'long', year:'numeric' });
-  addLine('Cliente: ' + clientName, { size: 10, color: [92, 87, 79], lineH: 6 });
-  addLine('Enviado em: ' + dateStr, { size: 10, color: [92, 87, 79], lineH: 6 });
-  y += 6;
-
-  // Divider
-  doc.setDrawColor(217, 211, 200);
-  doc.setLineWidth(0.3);
-  doc.line(margin, y, pageW - margin, y);
-  y += 8;
-
-  // Q&A
-  responses.forEach((r, i) => {
-    if (y > 250) { doc.addPage(); y = 20; }
-    addLine(String(i + 1).padStart(2,'0') + '.  ' + r.question, { size: 10, bold: true, color: [30,28,24], lineH: 5.5 });
-    y += 1;
-    const ans = r.answer || '(não respondida)';
-    addLine(ans, { size: 10, color: [92, 87, 79], lineH: 5.5, indent: 4 });
-    y += 7;
-  });
-
-  // Footer
-  doc.setFontSize(8);
-  doc.setTextColor(158, 152, 144);
-  doc.text('Gerado por SocialMeddie · briefing.socialmeddie.com.br', margin, 285);
-
-  return doc.output('datauristring').split(',')[1]; // base64
-}
 
 async function submitForm() {
   const btn       = document.getElementById('btn-submit');
