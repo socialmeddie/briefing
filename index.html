@@ -362,7 +362,7 @@
   <div id="form-tab">
     <div class="form-header">
       <h1 id="form-title">Briefing pré-reunião</h1>
-      <p id="form-desc">Antes do nosso encontro, me conta um pouco sobre o seu negócio. Você pode digitar ou gravar um áudio — eu transcrevo automaticamente.</p>
+      <p id="form-desc">Antes do nosso encontro, me conta um pouco sobre o seu negócio. Seja o mais detalhado possível para que eu possa elaborar a estratégia perfeita para o seu perfil.</p>
     </div>
     <div class="progress-wrap"><div class="progress-fill" id="progress-fill"></div></div>
     <div id="questions-list"></div>
@@ -495,15 +495,14 @@ const STORAGE_KEY   = 'sm_briefing_v2';
 const RESPONSES_KEY = 'sm_responses_v2';
 
 const DEFAULT_QUESTIONS = [
-  { text: "Qual é o nome do seu negócio e o que você vende ou oferece?", max: 600 },
-  { text: "Para quem é o seu produto ou serviço? Descreva o seu cliente ideal.", max: 600 },
-  { text: "O que diferencia você da concorrência? Por que o cliente escolheria você?", max: 600 },
-  { text: "Em quais redes sociais você está presente? Quais usa com mais frequência?", max: 400 },
-  { text: "Que tipo de conteúdo você já publica ou já publicou? O que funcionou melhor?", max: 600 },
-  { text: "Você já fez anúncios pagos (tráfego pago)? Se sim, como foi a experiência?", max: 500 },
-  { text: "Qual é o principal objetivo que você quer alcançar com o marketing digital nos próximos 3 meses?", max: 500 },
-  { text: "Qual é a sua maior dificuldade hoje com as redes sociais ou o marketing?", max: 500 },
-  { text: "Você tem ideia do quanto pode investir por mês em marketing (produção + gestão + anúncios)?", max: 400 },
+  { text: "Como você descreveria o seu trabalho, em uma frase, para quem não o conhece? Quais serviços você oferece atualmente? Qual deles é o seu foco?", max: 800 },
+  { text: "Para quem é o seu produto ou serviço? Descreva o seu cliente ideal. Por que ele ama o seu produto/serviço? O que ele costuma elogiar e qual era a maior dúvida dele antes de te contratar?", max: 800 },
+  { text: "Me conte sobre sua concorrência, quem são? Por que o cliente escolheria você? Me conte o que você faz nos bastidores que te diferencia.", max: 800 },
+  { text: "Me conte sobre quem te inspira, quem você acompanha e quem você acha que não combina com seu jeito de trabalhar? (podem ser pessoas/empresas de outros nichos)", max: 700 },
+  { text: "Agora pensando no visual: quais marcas você acompanha que você acha o estilo \"a sua cara\"? Me fala alguma coisa que você nunca faria, ou postaria no seu perfil?", max: 700 },
+  { text: "Qual o seu maior desafio no Instagram? Se você pudesse estalar os dedos hoje, qual o principal problema da sua marca que você gostaria de resolver? Qual o objetivo atual da sua conta no Instagram (atrair, converter, criar autoridade...)?", max: 700 },
+  { text: "Me conta como é uma semana típica sua, o que você faz, onde fica, onde vai, como é a sua rotina?", max: 700 },
+  { text: "Você tem facilidade em aparecer em vídeos? Prefere conteúdo mais educativo, pessoal/bastidores ou venda direta? Tem algum tipo de conteúdo que não quer fazer ou não se sente confortável?", max: 700 },
   { text: "Tem algo mais que queira compartilhar antes da nossa reunião? Alguma dúvida, expectativa ou contexto importante?", max: 800 },
 ];
 
@@ -549,7 +548,7 @@ function loadConfig() {
 
 function applyDefaults() {
   config.title      = config.title      || 'Briefing pré-reunião';
-  config.desc       = config.desc       || 'Antes do nosso encontro, me conta um pouco sobre o seu negócio. Você pode digitar ou gravar um áudio — eu transcrevo automaticamente.';
+  config.desc       = config.desc       || 'Antes do nosso encontro, me conta um pouco sobre o seu negócio. Seja o mais detalhado possível para que eu possa elaborar a estratégia perfeita para o seu perfil.';
   config.successMsg = config.successMsg || 'Briefing enviado! Obrigada pelas respostas. Já estou preparando as perguntas para a nossa conversa — logo entro em contato.';
   config.webhook    = config.webhook    || 'https://hook.us2.make.com/1e237m6rvlv4o2c7ksui6uy2jq3pp3lw';
   config.questions  = config.questions  || JSON.parse(JSON.stringify(DEFAULT_QUESTIONS));
