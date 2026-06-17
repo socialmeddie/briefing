@@ -819,17 +819,11 @@ async function submitForm() {
     `${i+1}. ${r.question}\n${r.answer || '(não respondida)'}`
   ).join('\n\n');
 
-  // Generate PDF
-  let pdf_base64 = '';
-  try { pdf_base64 = generatePDF(clientName, timestamp, responses); } catch(e) { console.warn('PDF error:', e); }
-
   const payload = {
     timestamp,
     client_name: clientName,
     responses,
-    formatted_text,
-    pdf_base64,
-    pdf_filename: `briefing-${clientName.replace(/\s+/g,'-').toLowerCase()}-${timestamp.slice(0,10)}.pdf`
+    formatted_text
   };
 
   // Save locally for admin panel
