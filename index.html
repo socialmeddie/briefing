@@ -532,7 +532,7 @@ function loadConfig() {
   const hash = window.location.hash.slice(1);
   if (hash) {
     try {
-      const decoded = JSON.parse(atob(hash));
+      const decoded = JSON.parse(decodeURIComponent(escape(atob(hash))));
       config = decoded;
       applyDefaults();
       return;
@@ -577,7 +577,7 @@ function buildClientLink() {
     webhook:    config.webhook,
     questions:  config.questions,
   };
-  const encoded = btoa(JSON.stringify(payload));
+  const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
   return window.location.origin + window.location.pathname + '#' + encoded;
 }
 
